@@ -1,0 +1,6 @@
+[build]
+  command = "node scripts/generate-config.mjs"
+  publish = "."
+
+# 本地 config.js 不进仓库；部署时由上面的脚本从环境变量生成。
+# 必填：Netlify Environment variables → SUPABASE_ANON_KEY（anon public）

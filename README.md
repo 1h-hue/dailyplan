@@ -47,7 +47,18 @@ python -m http.server 8080
 npx serve
 ```
 
-然后用浏览器打开 `http://localhost:8080`（`npx serve` 以它打印的地址为准）。
+然后用浏览器打开 `http://localhost:8080`（`npx serve` 以它打印的地址为准）。Windows 上若 `python` 无效，可用 `py -m http.server 8080`。
+
+## 5. 用 Netlify 从 GitHub 自动发布
+
+仓库已接 Netlify 时，`git push` 会自动部署。`config.js` 不在 Git 里，由构建脚本生成：
+
+1. 打开站点 → **Environment variables**，新增：
+   - Key：`SUPABASE_ANON_KEY`
+   - Value：Supabase 的 **anon public** key
+2. 打开 **Deploys** → **Trigger deploy** → **Deploy site**（或再 `git push` 一次）。
+
+构建命令见 `netlify.toml`：`node scripts/generate-config.mjs`。没填环境变量时构建会失败，避免上线一个不能登录的空 key 页面。
 
 ## 怎么用
 
