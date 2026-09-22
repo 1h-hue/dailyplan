@@ -1,14 +1,18 @@
 :root {
   color-scheme: light;
-  --bg: #f3f0e8;
-  --surface: #fffdf8;
-  --ink: #24221e;
-  --muted: #6d675e;
-  --line: #e3dcd0;
-  --accent: #2f5d50;
-  --accent-ink: #f7f4ee;
-  --danger: #8c3a32;
-  --shadow: 0 1px 0 rgba(36, 34, 30, 0.04);
+  --bg: #eef8ff;
+  --surface: rgba(255, 255, 255, 0.9);
+  --ink: #34253b;
+  --muted: #77667f;
+  --line: #d9c9e7;
+  --accent: #d41478;
+  --accent-hover: #b20f63;
+  --accent-soft: #ffe0f1;
+  --accent-ink: #ffffff;
+  --cloud-blue: #9fdcf4;
+  --cloud-blue-soft: #dff4ff;
+  --danger: #b4234f;
+  --shadow: 0 10px 30px rgba(99, 145, 179, 0.12);
   font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 
@@ -23,7 +27,11 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--bg);
+  background:
+    radial-gradient(circle at 12% 8%, rgba(255, 105, 180, 0.22), transparent 32rem),
+    radial-gradient(circle at 90% 18%, rgba(159, 220, 244, 0.55), transparent 34rem),
+    linear-gradient(145deg, #fff3fa 0%, var(--bg) 52%, #e3f6ff 100%);
+  background-attachment: fixed;
   color: var(--ink);
   line-height: 1.5;
 }
@@ -41,9 +49,9 @@ code {
 .banner {
   margin: 0;
   padding: 0.9rem 1.25rem;
-  background: #f3e2c4;
-  color: #3d2e16;
-  border-bottom: 1px solid #e2c48a;
+  background: var(--accent-soft);
+  color: #6f1647;
+  border-bottom: 1px solid #f1a8d0;
 }
 
 .top {
@@ -72,6 +80,7 @@ h2 {
 h1 {
   margin: 0;
   font-size: 1.8rem;
+  color: var(--accent);
 }
 
 h2 {
@@ -88,13 +97,79 @@ main {
 .card {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 16px;
   box-shadow: var(--shadow);
   padding: 1rem;
 }
 
 .login-card {
-  max-width: 420px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  max-width: 440px;
+  margin: 3.5rem auto 0;
+  padding: 2.25rem;
+  border: 1px solid rgba(212, 20, 120, 0.22);
+  border-top: 5px solid var(--accent);
+  box-shadow: 0 22px 55px rgba(85, 137, 176, 0.2);
+}
+
+.login-card > *:not(.login-bubble) {
+  position: relative;
+  z-index: 1;
+}
+
+.login-card h2 {
+  margin-bottom: 0.4rem;
+  color: var(--accent);
+  font-size: 1.65rem;
+}
+
+.login-kicker {
+  margin: 0 0 0.25rem;
+  color: #2585ae;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.login-bubble {
+  position: absolute;
+  z-index: 0;
+  border-radius: 999px;
+  filter: blur(1px);
+  pointer-events: none;
+}
+
+.login-bubble-pink {
+  top: -65px;
+  right: -45px;
+  width: 170px;
+  height: 170px;
+  background: rgba(255, 105, 180, 0.2);
+}
+
+.login-bubble-blue {
+  bottom: -75px;
+  left: -50px;
+  width: 190px;
+  height: 190px;
+  background: rgba(159, 220, 244, 0.32);
+}
+
+.login-card form {
+  margin-top: 1.25rem;
+}
+
+.login-card input {
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.login-card button[type="submit"] {
+  width: 100%;
+  margin-top: 0.2rem;
+  padding-block: 0.72rem;
+  font-weight: 700;
 }
 
 .hint,
@@ -129,6 +204,13 @@ input[type="date"] {
   border-radius: 8px;
   background: #fff;
   color: var(--ink);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+input:focus-visible {
+  border-color: var(--cloud-blue);
+  box-shadow: 0 0 0 3px rgba(90, 184, 226, 0.24);
+  outline: none;
 }
 
 button {
@@ -138,10 +220,14 @@ button {
   background: var(--accent);
   color: var(--accent-ink);
   cursor: pointer;
+  box-shadow: 0 5px 14px rgba(212, 20, 120, 0.18);
+  transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
 }
 
 button:hover {
-  background: #244a40;
+  background: var(--accent-hover);
+  box-shadow: 0 7px 18px rgba(212, 20, 120, 0.26);
+  transform: translateY(-1px);
 }
 
 button.ghost,
@@ -150,12 +236,13 @@ button.ghost,
   background: transparent;
   color: var(--ink);
   border-color: var(--line);
+  box-shadow: none;
 }
 
 button.ghost:hover,
 .user-bar button:hover,
 .row-actions button:hover {
-  background: #f6f1e7;
+  background: var(--cloud-blue-soft);
 }
 
 button.danger {
@@ -196,13 +283,97 @@ button.danger {
 }
 
 .live.is-on {
-  color: var(--accent);
+  color: #1978a2;
 }
 
 .columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.9rem;
+}
+
+.columns .card:first-child {
+  border-top: 4px solid var(--accent);
+}
+
+.columns .card:last-child {
+  border-top: 4px solid var(--cloud-blue);
+}
+
+.person-card {
+  min-width: 0;
+  padding: 1.2rem;
+}
+
+.person-card-mine {
+  background: linear-gradient(160deg, rgba(255, 236, 247, 0.96), rgba(255, 255, 255, 0.92) 45%);
+  border-color: #f2b8d7;
+}
+
+.person-card-partner {
+  background: linear-gradient(160deg, rgba(225, 246, 255, 0.97), rgba(255, 255, 255, 0.92) 45%);
+  border-color: #acdcef;
+}
+
+.person-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.65rem;
+}
+
+.person-heading h2,
+.person-label {
+  margin: 0;
+}
+
+.person-label {
+  margin-bottom: 0.08rem;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.person-avatar {
+  display: grid;
+  flex: 0 0 2.65rem;
+  width: 2.65rem;
+  height: 2.65rem;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 750;
+  box-shadow: 0 7px 16px rgba(52, 37, 59, 0.12);
+}
+
+.person-card-mine .person-avatar {
+  background: linear-gradient(145deg, #f04da2, var(--accent));
+}
+
+.person-card-mine h2 {
+  color: #a80e5d;
+}
+
+.person-card-partner .person-avatar {
+  background: linear-gradient(145deg, #71c8ec, #278bb5);
+}
+
+.person-card-partner h2 {
+  color: #176d93;
+}
+
+.person-card-partner .plan-item input[type="checkbox"] {
+  accent-color: #278bb5;
+}
+
+.person-card-mine .plan-item {
+  border-color: rgba(212, 20, 120, 0.16);
+}
+
+.person-card-partner .plan-item {
+  border-color: rgba(39, 139, 181, 0.2);
 }
 
 .add-form {
@@ -234,6 +405,7 @@ button.danger {
   width: 1.15rem;
   height: 1.15rem;
   margin: 0;
+  accent-color: var(--accent);
 }
 
 .plan-title {
@@ -250,8 +422,8 @@ button.danger {
   margin-left: 0.4rem;
   padding: 0.05rem 0.4rem;
   border-radius: 999px;
-  background: #e7f0ec;
-  color: var(--accent);
+  background: var(--cloud-blue-soft);
+  color: #176d93;
   font-size: 0.75rem;
   vertical-align: middle;
 }

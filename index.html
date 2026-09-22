@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>每日计划</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=3" />
   </head>
   <body>
     <div id="config-warning" class="banner" hidden>
@@ -26,6 +26,9 @@
 
     <main>
       <section id="login-view" class="card login-card" hidden>
+        <div class="login-bubble login-bubble-pink" aria-hidden="true"></div>
+        <div class="login-bubble login-bubble-blue" aria-hidden="true"></div>
+        <p class="login-kicker">WELCOME BACK</p>
         <h2>登录</h2>
         <p class="hint">使用在 Supabase 里创建的邮箱账号。这个页面不开放注册。</p>
         <form id="login-form">
@@ -58,8 +61,15 @@
         <p id="plan-error" class="error" role="alert"></p>
 
         <div class="columns">
-          <section class="card">
-            <h2>我的计划</h2>
+          <section class="card person-card person-card-mine">
+            <div class="person-heading">
+              <span class="person-avatar" aria-hidden="true">我</span>
+              <div>
+                <p class="person-label">PINK · 我的空间</p>
+                <h2>我的任务</h2>
+              </div>
+            </div>
+            <p class="hint">这里显示我的全部任务；需要让对方看见时，点击任务下方的“共享”。</p>
             <form id="add-form" class="add-form">
               <input
                 id="new-title"
@@ -74,11 +84,17 @@
             <p id="mine-empty" class="empty" hidden>这一天还没有计划。</p>
           </section>
 
-          <section class="card">
-            <h2>共享计划</h2>
-            <p class="hint">对方勾选共享后会出现在这里。你可以标记完成，不能改标题或删除。</p>
+          <section class="card person-card person-card-partner">
+            <div class="person-heading">
+              <span class="person-avatar" aria-hidden="true">TA</span>
+              <div>
+                <p class="person-label">BLUE · 对方空间</p>
+                <h2>对方的共享任务</h2>
+              </div>
+            </div>
+            <p class="hint">这里只显示对方愿意共享的任务；我可以协助勾选完成，但不能修改或删除。</p>
             <ul id="shared-list" class="plan-list"></ul>
-            <p id="shared-empty" class="empty" hidden>这一天还没有对方共享的计划。</p>
+            <p id="shared-empty" class="empty" hidden>对方这一天还没有共享任务。</p>
           </section>
         </div>
       </section>
