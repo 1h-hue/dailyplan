@@ -1,0 +1,290 @@
+:root {
+  color-scheme: light;
+  --bg: #f3f0e8;
+  --surface: #fffdf8;
+  --ink: #24221e;
+  --muted: #6d675e;
+  --line: #e3dcd0;
+  --accent: #2f5d50;
+  --accent-ink: #f7f4ee;
+  --danger: #8c3a32;
+  --shadow: 0 1px 0 rgba(36, 34, 30, 0.04);
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+code {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.92em;
+}
+
+.banner {
+  margin: 0;
+  padding: 0.9rem 1.25rem;
+  background: #f3e2c4;
+  color: #3d2e16;
+  border-bottom: 1px solid #e2c48a;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-end;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 0.5rem;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+}
+
+h1,
+h2 {
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.15rem;
+}
+
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0.75rem 1.25rem 2.5rem;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 1rem;
+}
+
+.login-card {
+  max-width: 420px;
+}
+
+.hint,
+.empty,
+.date-text,
+.live,
+.user-bar {
+  color: var(--muted);
+}
+
+.hint,
+.empty {
+  margin: 0 0 0.75rem;
+  font-size: 0.92rem;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.92rem;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"],
+input[type="date"] {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+}
+
+button {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0.55rem 0.85rem;
+  background: var(--accent);
+  color: var(--accent-ink);
+  cursor: pointer;
+}
+
+button:hover {
+  background: #244a40;
+}
+
+button.ghost,
+.user-bar button,
+.row-actions button {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+button.ghost:hover,
+.user-bar button:hover,
+.row-actions button:hover {
+  background: #f6f1e7;
+}
+
+button.danger {
+  color: var(--danger);
+}
+
+.error {
+  min-height: 1.25rem;
+  margin: 0.25rem 0 0.75rem;
+  color: var(--danger);
+  font-size: 0.92rem;
+}
+
+.user-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-bottom: 0.35rem;
+}
+
+.date-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.9rem;
+}
+
+.date-label {
+  margin: 0;
+  min-width: 11rem;
+}
+
+.date-text,
+.live {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.live.is-on {
+  color: var(--accent);
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+}
+
+.add-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.add-form input {
+  flex: 1;
+}
+
+.plan-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.plan-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 0.7rem;
+  align-items: center;
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.plan-item input[type="checkbox"] {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin: 0;
+}
+
+.plan-title {
+  margin: 0;
+}
+
+.plan-item.is-done .plan-title {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.badge {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: #e7f0ec;
+  color: var(--accent);
+  font-size: 0.75rem;
+  vertical-align: middle;
+}
+
+.row-actions {
+  grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+@media (max-width: 720px) {
+  .top,
+  .date-bar,
+  .add-form {
+    align-items: stretch;
+  }
+
+  .top,
+  .user-bar,
+  .add-form {
+    flex-direction: column;
+  }
+
+  .columns {
+    grid-template-columns: 1fr;
+  }
+
+  button,
+  input[type="email"],
+  input[type="password"],
+  input[type="text"],
+  input[type="date"] {
+    min-height: 44px;
+  }
+}

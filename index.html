@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>每日计划</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="config-warning" class="banner" hidden>
+      请填写 anon key。打开 <code>config.js</code>，把 Dashboard → Project Settings →
+      API 里的 <strong>anon public</strong> key 填到 <code>SUPABASE_ANON_KEY</code>。不要填写
+      service_role key。
+    </div>
+
+    <header class="top">
+      <div>
+        <p class="eyebrow">两人共用</p>
+        <h1>每日计划</h1>
+      </div>
+      <div id="user-bar" class="user-bar" hidden>
+        <span id="user-email"></span>
+        <button id="logout" type="button">退出</button>
+      </div>
+    </header>
+
+    <main>
+      <section id="login-view" class="card login-card" hidden>
+        <h2>登录</h2>
+        <p class="hint">使用在 Supabase 里创建的邮箱账号。这个页面不开放注册。</p>
+        <form id="login-form">
+          <label>
+            邮箱
+            <input id="email" type="email" autocomplete="username" required />
+          </label>
+          <label>
+            密码
+            <input id="password" type="password" autocomplete="current-password" required />
+          </label>
+          <p id="login-error" class="error" role="alert"></p>
+          <button type="submit">登录</button>
+        </form>
+      </section>
+
+      <section id="plan-view" hidden>
+        <div class="date-bar card">
+          <button id="prev-day" type="button">前一天</button>
+          <label class="date-label">
+            日期
+            <input id="plan-date" type="date" required />
+          </label>
+          <button id="next-day" type="button">后一天</button>
+          <button id="today" type="button">今天</button>
+          <p id="date-label" class="date-text"></p>
+          <p id="live-status" class="live">正在连接…</p>
+        </div>
+
+        <p id="plan-error" class="error" role="alert"></p>
+
+        <div class="columns">
+          <section class="card">
+            <h2>我的计划</h2>
+            <form id="add-form" class="add-form">
+              <input
+                id="new-title"
+                type="text"
+                maxlength="200"
+                placeholder="写下一件要做的事"
+                required
+              />
+              <button type="submit">添加</button>
+            </form>
+            <ul id="mine-list" class="plan-list"></ul>
+            <p id="mine-empty" class="empty" hidden>这一天还没有计划。</p>
+          </section>
+
+          <section class="card">
+            <h2>共享计划</h2>
+            <p class="hint">对方勾选共享后会出现在这里。你可以标记完成，不能改标题或删除。</p>
+            <ul id="shared-list" class="plan-list"></ul>
+            <p id="shared-empty" class="empty" hidden>这一天还没有对方共享的计划。</p>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script src="config.js"></script>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
