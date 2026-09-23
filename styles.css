@@ -197,7 +197,8 @@ label {
 input[type="email"],
 input[type="password"],
 input[type="text"],
-input[type="date"] {
+input[type="date"],
+textarea {
   width: 100%;
   padding: 0.65rem 0.75rem;
   border: 1px solid var(--line);
@@ -207,7 +208,13 @@ input[type="date"] {
   transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
-input:focus-visible {
+textarea {
+  resize: vertical;
+  min-height: 5.5rem;
+}
+
+input:focus-visible,
+textarea:focus-visible {
   border-color: var(--cloud-blue);
   box-shadow: 0 0 0 3px rgba(90, 184, 226, 0.24);
   outline: none;
@@ -435,6 +442,171 @@ button.danger {
   gap: 0.4rem;
 }
 
+.quote-plan {
+  color: #176d93;
+  border-color: #9fdcf4;
+}
+
+.message-board {
+  margin-top: 0.9rem;
+  padding: 1.25rem;
+  border-top: 4px solid transparent;
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(90deg, var(--accent), var(--cloud-blue)) border-box;
+}
+
+.message-board-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.message-board-heading h2,
+.message-board-heading .hint {
+  margin: 0;
+}
+
+.message-form {
+  padding: 1rem;
+  border: 1px solid #ead7e9;
+  border-radius: 12px;
+  background: linear-gradient(120deg, #fff5fa, #f1faff);
+}
+
+.message-form label {
+  margin-bottom: 0.6rem;
+}
+
+.message-context {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-left: 3px solid var(--cloud-blue);
+  border-radius: 8px;
+  background: rgba(223, 244, 255, 0.8);
+  color: #176d93;
+  font-size: 0.84rem;
+}
+
+.message-context span,
+.message-context strong {
+  display: block;
+}
+
+.message-context strong {
+  overflow: hidden;
+  max-width: 34rem;
+  color: var(--ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.message-context button {
+  flex: 0 0 auto;
+}
+
+.message-form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.message-form-footer .hint {
+  margin: 0;
+}
+
+.message-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin: 1.1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.message-item {
+  display: flex;
+  width: min(82%, 38rem);
+  flex-direction: column;
+}
+
+.message-mine {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.message-partner {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.message-meta {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0 0.25rem 0.25rem;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.message-bubble {
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid;
+  border-radius: 14px;
+}
+
+.message-mine .message-bubble {
+  border-color: #f0b3d3;
+  border-bottom-right-radius: 4px;
+  background: #fff0f8;
+}
+
+.message-partner .message-bubble {
+  border-color: #a9dcef;
+  border-bottom-left-radius: 4px;
+  background: #eaf8ff;
+}
+
+.message-bubble p {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.message-bubble blockquote,
+.message-plan-quote {
+  margin: 0 0 0.55rem;
+  padding: 0.45rem 0.6rem;
+  border-left: 3px solid rgba(39, 139, 181, 0.45);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.message-plan-quote {
+  color: #176d93;
+}
+
+.message-actions {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.3rem;
+}
+
+.message-actions button {
+  padding: 0.25rem 0.55rem;
+  font-size: 0.78rem;
+}
+
 @media (max-width: 720px) {
   .top,
   .date-bar,
@@ -456,7 +628,18 @@ button.danger {
   input[type="email"],
   input[type="password"],
   input[type="text"],
-  input[type="date"] {
+  input[type="date"],
+  textarea {
     min-height: 44px;
+  }
+
+  .message-board-heading,
+  .message-context {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .message-item {
+    width: 92%;
   }
 }

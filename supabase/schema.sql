@@ -108,6 +108,54 @@ for delete
 to authenticated
 using (user_id = auth.uid());
 
+-- 每日留言板
+create table if not exists public.messages (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users (id) on delete cascade,
+  message_date date not null,
+  body text not null,
+  reply_to_id uuid references public.messages (id) on delete set null,
+  quoted_plan_id uuid references public.plans (id) on delete set null,
+  quoted_plan_title text,
+  created_at timestamptz not null default now(),
+  constraint messages_body_len check (char_length(btrim(body)) between 1 and 500),
+  constraint messages_quote_title_len check (
+    quoted_plan_title is null or char_length(quoted_plan_title) between 1 and 200
+  )
+);
+
+create index if not exists messages_date_created_idx
+on public.messages (message_date, created_at);
+
+alter table public.messages enable row level security;
+
+revoke all on table public.messages from public;
+revoke all on table public.messages from anon;
+grant select, insert, delete on table public.messages to authenticated;
+
+drop policy if exists "messages_select_authenticated" on public.messages;
+create policy "messages_select_authenticated"
+on public.messages
+for select
+to authenticated
+using (true);
+
+drop policy if exists "messages_insert_own" on public.messages;
+create policy "messages_insert_own"
+on public.messages
+for insert
+to authenticated
+with check (user_id = auth.uid());
+
+drop policy if exists "messages_delete_own" on public.messages;
+create policy "messages_delete_own"
+on public.messages
+for delete
+to authenticated
+using (user_id = auth.uid());
+
+alter table public.messages replica identity full;
+
 -- Realtime 需要完整旧行，删除或更新日期时客户端才能按 plan_date 过滤。
 alter table public.plans replica identity full;
 
@@ -121,5 +169,15 @@ begin
       and tablename = 'plans'
   ) then
     alter publication supabase_realtime add table public.plans;
+  end if;
+
+  if not exists (
+    select 1
+    from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'messages'
+  ) then
+    alter publication supabase_realtime add table public.messages;
   end if;
 end $$;

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>每日计划</title>
-    <link rel="stylesheet" href="styles.css?v=3" />
+    <link rel="stylesheet" href="styles.css?v=4" />
   </head>
   <body>
     <div id="config-warning" class="banner" hidden>
@@ -97,6 +97,43 @@
             <p id="shared-empty" class="empty" hidden>对方这一天还没有共享任务。</p>
           </section>
         </div>
+
+        <section class="card message-board">
+          <div class="message-board-heading">
+            <div>
+              <p class="person-label">DAILY NOTES · 当日互动</p>
+              <h2>双人留言板</h2>
+            </div>
+            <p class="hint">留言会跟随上方日期切换，只有你们登录后可以查看。</p>
+          </div>
+
+          <form id="message-form" class="message-form">
+            <div id="message-context" class="message-context" hidden>
+              <div>
+                <span id="message-context-label"></span>
+                <strong id="message-context-text"></strong>
+              </div>
+              <button id="clear-message-context" class="ghost" type="button">取消引用</button>
+            </div>
+            <label>
+              写下今天想对对方说的话
+              <textarea
+                id="message-body"
+                maxlength="500"
+                rows="3"
+                placeholder="分享一句鼓励、提醒或今天的心情……"
+                required
+              ></textarea>
+            </label>
+            <div class="message-form-footer">
+              <span class="hint">最多 500 字</span>
+              <button type="submit">发送留言</button>
+            </div>
+          </form>
+
+          <ol id="message-list" class="message-list"></ol>
+          <p id="message-empty" class="empty" hidden>今天还没有留言，来写下第一句吧。</p>
+        </section>
       </section>
     </main>
 

@@ -11,6 +11,9 @@
 
 这段 SQL 会创建 `public.plans`、行级安全策略、更新时间触发器，并把表加入 Realtime。
 
+如果数据库以前已经初始化过，也请在更新代码后重新运行一次完整的 `supabase/schema.sql`。
+脚本可以重复执行，并会补建留言板所需的 `public.messages` 表、权限策略和实时同步配置。
+
 ## 2. 填写 anon key
 
 1. 打开 [Project Settings → API](https://supabase.com/dashboard/project/sxsktgjbxcnxfwijjtxi/settings/api)。
@@ -64,6 +67,7 @@ npx serve
 
 - **我的计划**：只显示自己这一天的条目。可以添加、勾选完成、共享、删除。
 - **共享计划**：显示对方标成共享的条目。你只能勾选完成，不能改标题、取消共享或删除。
+- **双人留言板**：按日期显示双方留言，可以回复对方，也可以从对方的共享任务点击“引用留言”。
 - 换日期后，两边都会换成那一天的内容。
 - 右上角显示「实时已连接」时，对方的修改会自动出现。
 
