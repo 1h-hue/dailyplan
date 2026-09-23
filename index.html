@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>每日计划</title>
-    <link rel="stylesheet" href="styles.css?v=4" />
+    <link rel="stylesheet" href="styles.css?v=5" />
   </head>
   <body>
     <div id="config-warning" class="banner" hidden>
@@ -46,6 +46,12 @@
       </section>
 
       <section id="plan-view" hidden>
+        <nav class="page-tabs" aria-label="功能切换">
+          <button class="page-tab is-active" type="button" data-tab="daily">每日计划</button>
+          <button class="page-tab" type="button" data-tab="sleep">睡眠记录</button>
+        </nav>
+
+        <div id="daily-tab-panel" class="tab-panel">
         <div class="date-bar card">
           <button id="prev-day" type="button">前一天</button>
           <label class="date-label">
@@ -134,6 +140,63 @@
           <ol id="message-list" class="message-list"></ol>
           <p id="message-empty" class="empty" hidden>今天还没有留言，来写下第一句吧。</p>
         </section>
+        </div>
+
+        <div id="sleep-tab-panel" class="tab-panel" hidden>
+          <section class="card sleep-hero">
+            <div>
+              <p class="person-label">SLEEP TOGETHER · 共享作息</p>
+              <h2>今天睡得怎么样？</h2>
+              <p id="sleep-date-label" class="hint"></p>
+            </div>
+            <div class="sleep-actions">
+              <button id="record-wake" class="sleep-button wake-button" type="button">
+                <span aria-hidden="true">☀</span>
+                记录起床时间
+              </button>
+              <button id="record-bedtime" class="sleep-button bedtime-button" type="button">
+                <span aria-hidden="true">☾</span>
+                记录睡觉时间
+              </button>
+            </div>
+          </section>
+
+          <p id="sleep-error" class="error" role="alert"></p>
+
+          <div class="sleep-columns">
+            <section class="card sleep-person sleep-person-mine">
+              <div class="person-heading">
+                <span class="person-avatar" aria-hidden="true">我</span>
+                <div>
+                  <p class="person-label">PINK · 我的作息</p>
+                  <h2>我的记录</h2>
+                </div>
+              </div>
+              <dl class="sleep-stats">
+                <div><dt>今天起床</dt><dd id="my-wake-time">未记录</dd></div>
+                <div><dt>今天睡觉</dt><dd id="my-bedtime">未记录</dd></div>
+                <div class="sleep-duration"><dt>昨晚睡眠</dt><dd id="my-sleep-duration">暂无法计算</dd></div>
+              </dl>
+            </section>
+
+            <section class="card sleep-person sleep-person-partner">
+              <div class="person-heading">
+                <span class="person-avatar" aria-hidden="true">TA</span>
+                <div>
+                  <p class="person-label">BLUE · 对方作息</p>
+                  <h2>对方的记录</h2>
+                </div>
+              </div>
+              <dl class="sleep-stats">
+                <div><dt>今天起床</dt><dd id="partner-wake-time">未记录</dd></div>
+                <div><dt>今天睡觉</dt><dd id="partner-bedtime">未记录</dd></div>
+                <div class="sleep-duration"><dt>昨晚睡眠</dt><dd id="partner-sleep-duration">暂无法计算</dd></div>
+              </dl>
+            </section>
+          </div>
+
+          <p class="sleep-note">睡眠时长按“昨天记录的睡觉时间”到“今天记录的起床时间”自动计算，双方记录默认共享。</p>
+        </div>
       </section>
     </main>
 

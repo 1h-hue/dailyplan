@@ -108,6 +108,56 @@ for delete
 to authenticated
 using (user_id = auth.uid());
 
+-- 双人共享睡眠记录：每天每人一行，记录起床和睡觉时间。
+create table if not exists public.sleep_records (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users (id) on delete cascade,
+  record_date date not null,
+  wake_at timestamptz,
+  bedtime_at timestamptz,
+  updated_at timestamptz not null default now(),
+  constraint sleep_records_user_date_unique unique (user_id, record_date)
+);
+
+create index if not exists sleep_records_date_idx
+on public.sleep_records (record_date);
+
+drop trigger if exists sleep_records_set_updated_at on public.sleep_records;
+create trigger sleep_records_set_updated_at
+before update on public.sleep_records
+for each row
+execute function public.set_plans_updated_at();
+
+alter table public.sleep_records enable row level security;
+
+revoke all on table public.sleep_records from public;
+revoke all on table public.sleep_records from anon;
+grant select, insert, update on table public.sleep_records to authenticated;
+
+drop policy if exists "sleep_records_select_authenticated" on public.sleep_records;
+create policy "sleep_records_select_authenticated"
+on public.sleep_records
+for select
+to authenticated
+using (true);
+
+drop policy if exists "sleep_records_insert_own" on public.sleep_records;
+create policy "sleep_records_insert_own"
+on public.sleep_records
+for insert
+to authenticated
+with check (user_id = auth.uid());
+
+drop policy if exists "sleep_records_update_own" on public.sleep_records;
+create policy "sleep_records_update_own"
+on public.sleep_records
+for update
+to authenticated
+using (user_id = auth.uid())
+with check (user_id = auth.uid());
+
+alter table public.sleep_records replica identity full;
+
 -- 每日留言板
 create table if not exists public.messages (
   id uuid primary key default gen_random_uuid(),
@@ -179,5 +229,15 @@ begin
       and tablename = 'messages'
   ) then
     alter publication supabase_realtime add table public.messages;
+  end if;
+
+  if not exists (
+    select 1
+    from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'sleep_records'
+  ) then
+    alter publication supabase_realtime add table public.sleep_records;
   end if;
 end $$;

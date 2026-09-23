@@ -30,6 +30,18 @@ const messageContext = document.querySelector("#message-context");
 const messageContextLabel = document.querySelector("#message-context-label");
 const messageContextText = document.querySelector("#message-context-text");
 const clearMessageContextButton = document.querySelector("#clear-message-context");
+const dailyTabPanel = document.querySelector("#daily-tab-panel");
+const sleepTabPanel = document.querySelector("#sleep-tab-panel");
+const sleepDateLabel = document.querySelector("#sleep-date-label");
+const sleepError = document.querySelector("#sleep-error");
+const recordWakeButton = document.querySelector("#record-wake");
+const recordBedtimeButton = document.querySelector("#record-bedtime");
+const myWakeTime = document.querySelector("#my-wake-time");
+const myBedtime = document.querySelector("#my-bedtime");
+const mySleepDuration = document.querySelector("#my-sleep-duration");
+const partnerWakeTime = document.querySelector("#partner-wake-time");
+const partnerBedtime = document.querySelector("#partner-bedtime");
+const partnerSleepDuration = document.querySelector("#partner-sleep-duration");
 
 let supabase = null;
 let currentUser = null;
@@ -37,6 +49,7 @@ let channel = null;
 let loadToken = 0;
 let replyTarget = null;
 let quotedPlan = null;
+let sleepRows = [];
 
 function show(el, visible) {
   el.hidden = !visible;
@@ -98,6 +111,35 @@ function setMessageContext({ reply = null, plan = null } = {}) {
   messageContextLabel.textContent = reply ? "正在回复" : "正在引用共享任务";
   messageContextText.textContent = reply ? reply.body : plan.title;
   messageBody.focus();
+}
+
+function formatClock(value) {
+  if (!value) return "未记录";
+  return new Intl.DateTimeFormat("zh-CN", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(value));
+}
+
+function sleepDuration(bedtime, wakeTime) {
+  if (!bedtime || !wakeTime) return "暂无法计算";
+  const milliseconds = new Date(wakeTime) - new Date(bedtime);
+  if (milliseconds <= 0 || milliseconds > 24 * 60 * 60 * 1000) return "时间记录有误";
+  const minutes = Math.round(milliseconds / 60000);
+  const hoursPart = Math.floor(minutes / 60);
+  const minutesPart = minutes % 60;
+  return `${hoursPart} 小时 ${minutesPart} 分钟`;
+}
+
+function switchTab(name) {
+  const isDaily = name === "daily";
+  show(dailyTabPanel, isDaily);
+  show(sleepTabPanel, !isDaily);
+  for (const button of document.querySelectorAll(".page-tab")) {
+    button.classList.toggle("is-active", button.dataset.tab === name);
+    button.setAttribute("aria-selected", String(button.dataset.tab === name));
+  }
+  if (!isDaily) loadSleepRecords();
 }
 
 function renderList(list, emptyEl, items, { owned }) {
@@ -245,6 +287,7 @@ function showPlanner(user) {
   subscribe();
   loadPlans();
   loadMessages();
+  loadSleepRecords();
 }
 
 function showLogin() {
@@ -301,6 +344,76 @@ async function loadMessages() {
   renderMessages(data || []);
 }
 
+function renderSleepPerson({ todayRow, previousRow, wakeEl, bedtimeEl, durationEl }) {
+  wakeEl.textContent = formatClock(todayRow?.wake_at);
+  bedtimeEl.textContent = formatClock(todayRow?.bedtime_at);
+  durationEl.textContent = sleepDuration(previousRow?.bedtime_at, todayRow?.wake_at);
+}
+
+async function loadSleepRecords() {
+  if (!supabase || !currentUser) return;
+  const today = todayISO();
+  const previousDate = shiftISO(today, -1);
+  sleepDateLabel.textContent = formatDate(today);
+  setError(sleepError, "");
+
+  const { data, error } = await supabase
+    .from("sleep_records")
+    .select("id, user_id, record_date, wake_at, bedtime_at, updated_at")
+    .gte("record_date", previousDate)
+    .lte("record_date", today);
+
+  if (error) {
+    setError(sleepError, friendlyError(error));
+    return;
+  }
+
+  sleepRows = data || [];
+  const partnerId = sleepRows.find((row) => row.user_id !== currentUser.id)?.user_id;
+  const rowFor = (userId, date) =>
+    sleepRows.find((row) => row.user_id === userId && row.record_date === date);
+
+  renderSleepPerson({
+    todayRow: rowFor(currentUser.id, today),
+    previousRow: rowFor(currentUser.id, previousDate),
+    wakeEl: myWakeTime,
+    bedtimeEl: myBedtime,
+    durationEl: mySleepDuration,
+  });
+  renderSleepPerson({
+    todayRow: partnerId ? rowFor(partnerId, today) : null,
+    previousRow: partnerId ? rowFor(partnerId, previousDate) : null,
+    wakeEl: partnerWakeTime,
+    bedtimeEl: partnerBedtime,
+    durationEl: partnerSleepDuration,
+  });
+}
+
+async function recordSleepTime(field) {
+  if (!supabase || !currentUser) return;
+  const today = todayISO();
+  const existing = sleepRows.find(
+    (row) => row.user_id === currentUser.id && row.record_date === today
+  );
+  const label = field === "wake_at" ? "起床" : "睡觉";
+  if (existing?.[field] && !window.confirm(`今天已经记录过${label}时间，要更新为现在吗？`)) {
+    return;
+  }
+
+  const payload = {
+    user_id: currentUser.id,
+    record_date: today,
+    wake_at: existing?.wake_at || null,
+    bedtime_at: existing?.bedtime_at || null,
+    [field]: new Date().toISOString(),
+  };
+  const { error } = await supabase
+    .from("sleep_records")
+    .upsert(payload, { onConflict: "user_id,record_date" });
+  if (error) setError(sleepError, friendlyError(error));
+  else loadSleepRecords();
+}
+
 function subscribe() {
   if (!supabase) return;
   if (channel) supabase.removeChannel(channel);
@@ -323,6 +436,11 @@ function subscribe() {
         const row = payload.new?.id ? payload.new : payload.old;
         if (!row || row.message_date === dateInput.value) loadMessages();
       }
+    )
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "sleep_records" },
+      () => loadSleepRecords()
     )
     .subscribe((status) => {
       if (status === "SUBSCRIBED") {
@@ -430,6 +548,11 @@ function boot() {
 
   messageForm.addEventListener("submit", submitMessage);
   clearMessageContextButton.addEventListener("click", () => setMessageContext());
+  recordWakeButton.addEventListener("click", () => recordSleepTime("wake_at"));
+  recordBedtimeButton.addEventListener("click", () => recordSleepTime("bedtime_at"));
+  for (const button of document.querySelectorAll(".page-tab")) {
+    button.addEventListener("click", () => switchTab(button.dataset.tab));
+  }
 
   dateInput.addEventListener("change", () => {
     setMessageContext();

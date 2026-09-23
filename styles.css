@@ -293,6 +293,174 @@ button.danger {
   color: #1978a2;
 }
 
+.page-tabs {
+  display: inline-flex;
+  gap: 0.35rem;
+  margin-bottom: 0.9rem;
+  padding: 0.3rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: var(--shadow);
+}
+
+.page-tab {
+  min-width: 7.5rem;
+  background: transparent;
+  color: var(--muted);
+  box-shadow: none;
+  font-weight: 650;
+}
+
+.page-tab:hover {
+  background: var(--cloud-blue-soft);
+  color: var(--ink);
+  box-shadow: none;
+}
+
+.page-tab.is-active {
+  background: linear-gradient(135deg, var(--accent), #e8439a);
+  color: #fff;
+  box-shadow: 0 5px 14px rgba(212, 20, 120, 0.2);
+}
+
+.tab-panel {
+  animation: tab-enter 180ms ease-out;
+}
+
+@keyframes tab-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sleep-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.4rem;
+  border-top: 4px solid transparent;
+  background:
+    linear-gradient(120deg, rgba(255, 239, 248, 0.96), rgba(230, 247, 255, 0.96)) padding-box,
+    linear-gradient(90deg, var(--accent), var(--cloud-blue)) border-box;
+}
+
+.sleep-hero h2,
+.sleep-hero .hint {
+  margin: 0;
+}
+
+.sleep-actions {
+  display: flex;
+  gap: 0.65rem;
+}
+
+.sleep-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+}
+
+.sleep-button span {
+  font-size: 1.15rem;
+}
+
+.wake-button {
+  background: linear-gradient(135deg, #f04da2, var(--accent));
+}
+
+.bedtime-button {
+  background: linear-gradient(135deg, #55b9e4, #247da4);
+  box-shadow: 0 5px 14px rgba(39, 139, 181, 0.2);
+}
+
+.bedtime-button:hover {
+  background: linear-gradient(135deg, #359fcf, #176d93);
+  box-shadow: 0 7px 18px rgba(39, 139, 181, 0.27);
+}
+
+.sleep-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+}
+
+.sleep-person {
+  padding: 1.2rem;
+}
+
+.sleep-person-mine {
+  border-top: 4px solid var(--accent);
+  background: linear-gradient(160deg, rgba(255, 236, 247, 0.96), rgba(255, 255, 255, 0.92) 48%);
+}
+
+.sleep-person-partner {
+  border-top: 4px solid var(--cloud-blue);
+  background: linear-gradient(160deg, rgba(225, 246, 255, 0.97), rgba(255, 255, 255, 0.92) 48%);
+}
+
+.sleep-person-mine .person-avatar {
+  background: linear-gradient(145deg, #f04da2, var(--accent));
+}
+
+.sleep-person-partner .person-avatar {
+  background: linear-gradient(145deg, #71c8ec, #278bb5);
+}
+
+.sleep-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+  margin: 1rem 0 0;
+}
+
+.sleep-stats > div {
+  padding: 0.8rem;
+  border: 1px solid rgba(119, 102, 127, 0.15);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.sleep-stats .sleep-duration {
+  grid-column: 1 / -1;
+}
+
+.sleep-stats dt {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.sleep-stats dd {
+  margin: 0.2rem 0 0;
+  color: var(--ink);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.sleep-duration dd {
+  color: var(--accent);
+  font-size: 1.35rem;
+}
+
+.sleep-person-partner .sleep-duration dd {
+  color: #176d93;
+}
+
+.sleep-note {
+  margin: 0.8rem 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
 .columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -622,6 +790,25 @@ button.danger {
 
   .columns {
     grid-template-columns: 1fr;
+  }
+
+  .sleep-hero,
+  .sleep-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .sleep-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .page-tabs {
+    display: flex;
+  }
+
+  .page-tab {
+    flex: 1;
+    min-width: 0;
   }
 
   button,
