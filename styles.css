@@ -293,6 +293,27 @@ button.danger {
   color: #1978a2;
 }
 
+.message-notice {
+  margin-left: auto;
+  border: 1px solid rgba(25, 120, 162, 0.28);
+  background: linear-gradient(135deg, #e8f5fb, #dff0f8);
+  color: #0f5f82;
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  box-shadow: none;
+}
+
+.message-notice:hover {
+  filter: brightness(0.98);
+}
+
+.message-notice:focus-visible {
+  outline: 2px solid #1978a2;
+  outline-offset: 2px;
+}
+
 .page-tabs {
   display: inline-flex;
   gap: 0.35rem;

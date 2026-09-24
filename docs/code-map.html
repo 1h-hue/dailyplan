@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>每日计划 · 代码地图</title>
+    <style>
+      :root {
+        --bg: #f6f1ef;
+        --ink: #1f1a1c;
+        --muted: #6b5f64;
+        --card: #fffdfb;
+        --line: #e6d9d4;
+        --pink: #d97b9a;
+        --blue: #6b9bb8;
+        --accent: #3d5a6c;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(217, 123, 154, 0.16), transparent 40%),
+          radial-gradient(circle at top right, rgba(107, 155, 184, 0.16), transparent 38%),
+          var(--bg);
+        line-height: 1.55;
+      }
+
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 40px 20px 64px;
+      }
+
+      .hero {
+        margin-bottom: 28px;
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--pink);
+        font-weight: 700;
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        font-size: clamp(28px, 4vw, 36px);
+        line-height: 1.2;
+      }
+
+      h2 {
+        margin: 0 0 12px;
+        font-size: 20px;
+      }
+
+      .lead {
+        margin: 0;
+        color: var(--muted);
+        max-width: 46rem;
+      }
+
+      .pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: #fff;
+        border: 1px solid var(--line);
+        font-size: 13px;
+        color: var(--accent);
+      }
+
+      section {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .mini-card {
+        background: #faf6f4;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+      }
+
+      .mini-card h3 {
+        margin: 0 0 8px;
+        font-size: 15px;
+      }
+
+      .mini-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .mini-card code {
+        font-size: 13px;
+        color: var(--ink);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 10px 8px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+
+      th {
+        font-size: 12px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      code,
+      .path {
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 13px;
+        background: #f3ebe8;
+        padding: 1px 6px;
+        border-radius: 6px;
+      }
+
+      .note {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .footer {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 720px) {
+        .grid-3,
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+
+        table,
+        thead,
+        tbody,
+        th,
+        td,
+        tr {
+          display: block;
+        }
+
+        thead {
+          display: none;
+        }
+
+        tr {
+          padding: 12px 0;
+          border-bottom: 1px solid var(--line);
+        }
+
+        td {
+          border: none;
+          padding: 4px 0;
+        }
+
+        td::before {
+          content: attr(data-label);
+          display: block;
+          font-size: 11px;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          color: var(--muted);
+          margin-bottom: 2px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header class="hero">
+        <p class="eyebrow">Dailyplan · Docs</p>
+        <h1>功能与代码地图</h1>
+        <p class="lead">
+          静态网页：浏览器直接跑 HTML/CSS/JS，数据在 Supabase，发布在 Netlify。
+          没有 React/Vue，也没有单独的后端文件夹——业务几乎都在根目录几个文件里。
+        </p>
+        <div class="pills">
+          <span class="pill">前端三件套</span>
+          <span class="pill">Supabase 云库</span>
+          <span class="pill">Netlify 发布</span>
+        </div>
+      </header>
+
+      <section>
+        <h2>四个最关键文件（先记住这个）</h2>
+        <p class="note" style="margin-bottom: 12px">
+          日常改产品几乎只碰这四个。不要把「样子」和「内容」搞混，也不要把
+          <span class="path">schema.sql</span> 当成存数据的地方。
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>文件</th>
+              <th>一句话</th>
+              <th>负责什么</th>
+              <th>不负责什么</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="文件"><span class="path">index.html</span></td>
+              <td data-label="一句话">页面骨架 + 有什么内容</td>
+              <td data-label="负责什么">
+                标题、按钮、表单、两个标签页、列表等结构；决定页面上「有哪些东西」
+              </td>
+              <td data-label="不负责什么">
+                不管颜色好不好看；也不直接读写云端数据
+              </td>
+            </tr>
+            <tr>
+              <td data-label="文件"><span class="path">styles.css</span></td>
+              <td data-label="一句话">长什么样</td>
+              <td data-label="负责什么">
+                颜色、间距、字体、粉蓝配色、卡片布局、手机适配；按钮和模块的样式
+              </td>
+              <td data-label="不负责什么">
+                <strong>不是</strong>页面内容本身；不写登录、添加任务等逻辑
+              </td>
+            </tr>
+            <tr>
+              <td data-label="文件"><span class="path">app.js</span></td>
+              <td data-label="一句话">点了之后干什么</td>
+              <td data-label="负责什么">
+                登录、增删改计划、留言、睡眠记录、日期切换、实时同步；按下按钮后的一系列反应
+              </td>
+              <td data-label="不负责什么">
+                不决定货架长什么样（表结构在 SQL）；也不单独画整页布局
+              </td>
+            </tr>
+            <tr>
+              <td data-label="文件"><span class="path">supabase/schema.sql</span></td>
+              <td data-label="一句话">数据库货架怎么设计</td>
+              <td data-label="负责什么">
+                建表（plans / messages / sleep_records）、字段、权限（RLS）、触发器、Realtime
+              </td>
+              <td data-label="不负责什么">
+                <strong>本身不存每天的计划数据</strong>；真正存数据的是 Supabase 云库。改完要在 SQL Editor 里 Run
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="note" style="margin-top: 12px">
+          记忆口诀：html = 有什么；css = 长什么样；js = 点了干什么；schema.sql = 仓库货架怎么搭。
+          另：不要双击打开 <span class="path">index.html</span>，请用
+          <code>py -m http.server 8080</code> 再访问 http://localhost:8080，否则脚本可能不运行，页面只剩标题。
+        </p>
+      </section>
+
+      <section>
+        <h2>现有功能</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>功能</th>
+              <th>做什么</th>
+              <th>主要落点</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="功能">登录 / 退出</td>
+              <td data-label="做什么">Supabase Auth 邮箱密码；页面不开放注册</td>
+              <td data-label="主要落点"><span class="path">app.js</span> + <span class="path">index.html</span></td>
+            </tr>
+            <tr>
+              <td data-label="功能">每日计划 · 我的任务</td>
+              <td data-label="做什么">按日添加、完成、共享、删除自己的任务</td>
+              <td data-label="主要落点"><span class="path">plans</span> 表</td>
+            </tr>
+            <tr>
+              <td data-label="功能">每日计划 · 对方共享</td>
+              <td data-label="做什么">只看对方 shared 任务；可勾完成，不能改删</td>
+              <td data-label="主要落点"><span class="path">plans</span> + RLS</td>
+            </tr>
+            <tr>
+              <td data-label="功能">双人留言板</td>
+              <td data-label="做什么">按日留言、回复、引用共享任务</td>
+              <td data-label="主要落点"><span class="path">messages</span> 表</td>
+            </tr>
+            <tr>
+              <td data-label="功能">睡眠记录</td>
+              <td data-label="做什么">记录起床/睡觉；双方共享；算昨晚时长</td>
+              <td data-label="主要落点"><span class="path">sleep_records</span> 表</td>
+            </tr>
+            <tr>
+              <td data-label="功能">日期切换</td>
+              <td data-label="做什么">前一天 / 后一天 / 今天；计划和留言随日期刷新</td>
+              <td data-label="主要落点"><span class="path">app.js</span></td>
+            </tr>
+            <tr>
+              <td data-label="功能">实时联动</td>
+              <td data-label="做什么">Realtime 订阅；对方改动能自动出现</td>
+              <td data-label="主要落点"><span class="path">subscribe()</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>目录结构（该改哪）</h2>
+        <p class="note" style="margin-bottom: 12px">
+          真正要改产品的，几乎只有根目录三个文件 + <span class="path">supabase/schema.sql</span>。其余是配置与文档。
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>文件 / 目录</th>
+              <th>职责</th>
+              <th>什么时候改它</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="文件"><span class="path">index.html</span></td>
+              <td data-label="职责">页面骨架：登录区、两个标签页、列表和表单的 DOM</td>
+              <td data-label="何时改">改文案、按钮、加一块新 UI 的外壳</td>
+            </tr>
+            <tr>
+              <td data-label="文件"><span class="path">styles.css</span></td>
+              <td data-label="职责">粉蓝配色、布局、卡片、列表、睡眠页样式</td>
+              <td data-label="何时改">改颜色、间距、手机适配、动画</td>
+            </tr>
+            <tr>
+              <td data-label="文件"><span class="path">app.js</span></td>
+              <td data-label="职责">全部交互：读写 Supabase、渲染列表、标签切换、实时订阅</td>
+              <td data-label="何时改">改业务逻辑、校验、数据怎么显示</td>
+            </tr>
+            <tr>
+              <td data-label="文件"><span class="path">config.js</span></td>
+              <td data-label="职责">本地 URL + anon key（不进 Git）</td>
+              <td data-label="何时改">只改密钥；不要 commit</td>
+            </tr>
+            <tr>
+              <td data-label="文件"><span class="path">config.example.js</span></td>
+              <td data-label="职责">给协作者复制用的空模板</td>
+              <td data-label="何时改">很少改</td>
+            </tr>
+            <tr>
+              <td data-label="文件"><span class="path">supabase/schema.sql</span></td>
+              <td data-label="职责">表结构、RLS、触发器、Realtime 发布</td>
+              <td data-label="何时改">加表/改权限后在此写 SQL，再在控制台 Run</td>
+            </tr>
+            <tr>
+              <td data-label="文件"><span class="path">scripts/generate-config.mjs</span></td>
+              <td data-label="职责">Netlify 构建时生成 config.js</td>
+              <td data-label="何时改">部署配置出问题才动</td>
+            </tr>
+            <tr>
+              <td data-label="文件"><span class="path">netlify.toml</span></td>
+              <td data-label="职责">构建命令与发布目录</td>
+              <td data-label="何时改">改部署方式时动</td>
+            </tr>
+            <tr>
+              <td data-label="文件"><span class="path">README.md</span></td>
+              <td data-label="职责">使用与协作说明</td>
+              <td data-label="何时改">流程变了就更新文档</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>数据怎么分层</h2>
+        <div class="grid-3">
+          <div class="mini-card">
+            <h3>浏览器</h3>
+            <p>
+              <span class="path">index.html</span> 画界面；
+              <span class="path">styles.css</span> 定样子；
+              <span class="path">app.js</span> 调 Supabase、更新列表。
+            </p>
+          </div>
+          <div class="mini-card">
+            <h3>Supabase</h3>
+            <p>
+              三张业务表：<strong>plans · messages · sleep_records</strong>。
+              Auth 管登录；RLS 管权限；Realtime 管同步。
+            </p>
+          </div>
+          <div class="mini-card">
+            <h3>Netlify</h3>
+            <p>托管静态文件；构建时用环境变量生成 config.js。不存业务数据。</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>我想改 X → 动哪个文件</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>目标</th>
+              <th>先改</th>
+              <th>还可能改</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="目标">改页面上的字、标题、按钮文案</td>
+              <td data-label="先改"><span class="path">index.html</span></td>
+              <td data-label="还可能改">偶尔配 <span class="path">styles.css</span></td>
+            </tr>
+            <tr>
+              <td data-label="目标">改颜色、布局、粉/蓝风格</td>
+              <td data-label="先改"><span class="path">styles.css</span></td>
+              <td data-label="还可能改">—</td>
+            </tr>
+            <tr>
+              <td data-label="目标">加任务字段 / 改完成逻辑 / 新交互</td>
+              <td data-label="先改"><span class="path">app.js</span></td>
+              <td data-label="还可能改">若新字段：再改 <span class="path">schema.sql</span></td>
+            </tr>
+            <tr>
+              <td data-label="目标">加新标签页（例如「心情」）</td>
+              <td data-label="先改"><span class="path">index.html</span> 加面板</td>
+              <td data-label="还可能改"><span class="path">app.js</span> + <span class="path">styles.css</span></td>
+            </tr>
+            <tr>
+              <td data-label="目标">加新数据表或改谁能看谁能改</td>
+              <td data-label="先改"><span class="path">supabase/schema.sql</span></td>
+              <td data-label="还可能改">在 Supabase SQL Editor 执行</td>
+            </tr>
+            <tr>
+              <td data-label="目标">只换 anon key</td>
+              <td data-label="先改">本地 <span class="path">config.js</span></td>
+              <td data-label="还可能改">线上：Netlify Environment variables</td>
+            </tr>
+            <tr>
+              <td data-label="目标">部署失败 / 构建脚本</td>
+              <td data-label="先改"><span class="path">netlify.toml</span>、<span class="path">scripts/</span></td>
+              <td data-label="还可能改">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>app.js 内部怎么找</h2>
+        <p class="note" style="margin-bottom: 12px">单文件，按函数名搜即可，不必找「文件夹」。</p>
+        <div class="grid-2">
+          <div class="mini-card">
+            <h3>计划</h3>
+            <p><code>loadPlans / renderList / toggleDone / toggleShared / removePlan</code></p>
+          </div>
+          <div class="mini-card">
+            <h3>留言</h3>
+            <p><code>loadMessages / renderMessages / submitMessage / setMessageContext</code></p>
+          </div>
+          <div class="mini-card">
+            <h3>睡眠</h3>
+            <p><code>loadSleepRecords / recordSleepTime / renderSleepPerson / sleepDuration</code></p>
+          </div>
+          <div class="mini-card">
+            <h3>壳子</h3>
+            <p><code>boot / showLogin / showPlanner / switchTab / subscribe</code></p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>改完怎么上线</h2>
+        <p class="note">
+          本地 <code>py -m http.server 8080</code> 测过 →
+          <code>git commit</code> → <code>git push</code> → 等 Netlify Published。
+          若改了 <span class="path">schema.sql</span>，还要在 Supabase SQL Editor 再 Run 一次，
+          否则只有代码、没有新表。
+        </p>
+      </section>
+
+      <p class="footer">
+        文件位置：<span class="path">D:\dailyplan\docs\code-map.html</span>
+        · 基于仓库 master（含留言板与睡眠记录）整理。
+        用本地静态服务器打开，或直接双击本文件也可查看（纯静态说明页）。
+      </p>
+    </main>
+  </body>
+</html>

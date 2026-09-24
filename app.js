@@ -16,6 +16,7 @@ const logoutButton = document.querySelector("#logout");
 const dateInput = document.querySelector("#plan-date");
 const dateLabel = document.querySelector("#date-label");
 const liveStatus = document.querySelector("#live-status");
+const messageNotice = document.querySelector("#message-notice");
 const addForm = document.querySelector("#add-form");
 const newTitle = document.querySelector("#new-title");
 const mineList = document.querySelector("#mine-list");
@@ -50,6 +51,7 @@ let loadToken = 0;
 let replyTarget = null;
 let quotedPlan = null;
 let sleepRows = [];
+let loadedMessages = [];
 
 function show(el, visible) {
   el.hidden = !visible;
@@ -111,6 +113,78 @@ function setMessageContext({ reply = null, plan = null } = {}) {
   messageContextLabel.textContent = reply ? "正在回复" : "正在引用共享任务";
   messageContextText.textContent = reply ? reply.body : plan.title;
   messageBody.focus();
+}
+
+function lastSeenStorageKey() {
+  return currentUser ? `dailyplan:msg-seen:${currentUser.id}` : "";
+}
+
+function getMessagesLastSeen() {
+  const key = lastSeenStorageKey();
+  return key ? localStorage.getItem(key) || "" : "";
+}
+
+function setMessagesLastSeen(iso) {
+  const key = lastSeenStorageKey();
+  if (key && iso) localStorage.setItem(key, iso);
+}
+
+function partnerMessages(items = loadedMessages) {
+  if (!currentUser) return [];
+  return items.filter((item) => item.user_id !== currentUser.id);
+}
+
+function updateMessageNotice(items = loadedMessages) {
+  if (!currentUser || !messageNotice) return;
+  const lastSeen = getMessagesLastSeen();
+  const unread = partnerMessages(items).filter(
+    (item) => !lastSeen || item.created_at > lastSeen
+  );
+  if (unread.length === 0) {
+    show(messageNotice, false);
+    messageNotice.textContent = "对方有新留言";
+    return;
+  }
+  messageNotice.textContent =
+    unread.length === 1 ? "对方有新留言" : `对方有 ${unread.length} 条新留言`;
+  show(messageNotice, true);
+}
+
+function markMessagesSeen(items = loadedMessages) {
+  if (!currentUser) return;
+  const partner = partnerMessages(items);
+  if (partner.length > 0) {
+    const newest = partner.reduce((latest, item) =>
+      item.created_at > latest ? item.created_at : latest
+    , partner[0].created_at);
+    setMessagesLastSeen(newest);
+  } else {
+    setMessagesLastSeen(new Date().toISOString());
+  }
+  show(messageNotice, false);
+}
+
+function jumpToMessageBoard() {
+  switchTab("daily");
+  const board = document.querySelector(".message-board");
+  board?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function watchMessageBoardVisibility() {
+  const board = document.querySelector(".message-board");
+  if (!board || typeof IntersectionObserver !== "function") return;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting || !currentUser) continue;
+        // 留言板进入可视区域后才记为已读，避免 Tab/误触输入框清掉提醒。
+        markMessagesSeen();
+      }
+    },
+    { threshold: 0.35 }
+  );
+  observer.observe(board);
 }
 
 function formatClock(value) {
@@ -292,9 +366,11 @@ function showPlanner(user) {
 
 function showLogin() {
   currentUser = null;
+  loadedMessages = [];
   show(planView, false);
   show(userBar, false);
   show(loginView, true);
+  show(messageNotice, false);
   if (channel && supabase) {
     supabase.removeChannel(channel);
     channel = null;
@@ -335,13 +411,15 @@ async function loadMessages() {
     .from("messages")
     .select("id, user_id, message_date, body, reply_to_id, quoted_plan_id, quoted_plan_title, created_at")
     .eq("message_date", planDate)
-    .order("created_at", { ascending: true });
+    .order("created_at", { ascending: false });
 
   if (error) {
     setError(planError, friendlyError(error));
     return;
   }
-  renderMessages(data || []);
+  loadedMessages = data || [];
+  renderMessages(loadedMessages);
+  updateMessageNotice(loadedMessages);
 }
 
 function renderSleepPerson({ todayRow, previousRow, wakeEl, bedtimeEl, durationEl }) {
@@ -548,6 +626,8 @@ function boot() {
 
   messageForm.addEventListener("submit", submitMessage);
   clearMessageContextButton.addEventListener("click", () => setMessageContext());
+  messageNotice.addEventListener("click", jumpToMessageBoard);
+  watchMessageBoardVisibility();
   recordWakeButton.addEventListener("click", () => recordSleepTime("wake_at"));
   recordBedtimeButton.addEventListener("click", () => recordSleepTime("bedtime_at"));
   for (const button of document.querySelectorAll(".page-tab")) {
