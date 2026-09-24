@@ -13,7 +13,9 @@
 
 如果数据库以前已经初始化过，也请在更新代码后重新运行一次完整的 `supabase/schema.sql`。
 脚本可以重复执行，并会补建留言板所需的 `public.messages`、睡眠记录所需的
-`public.sleep_records` 表，以及对应的权限策略和实时同步配置。
+`public.sleep_records`、留言已读进度所需的 `public.message_read_state` 表，以及对应的权限策略和实时同步配置。
+
+留言提醒的已读时间存在 `message_read_state` 里，跟账号走，换手机/电脑登录会同步；不是存在浏览器本地。
 
 ## 2. 填写 anon key
 

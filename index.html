@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>每日计划</title>
-    <link rel="stylesheet" href="styles.css?v=6" />
+    <link rel="stylesheet" href="styles.css?v=7" />
   </head>
   <body>
     <div id="config-warning" class="banner" hidden>
@@ -51,7 +51,6 @@
           <button class="page-tab" type="button" data-tab="sleep">睡眠记录</button>
         </nav>
 
-        <div id="daily-tab-panel" class="tab-panel">
         <div class="date-bar card">
           <button id="prev-day" type="button">前一天</button>
           <label class="date-label">
@@ -67,6 +66,7 @@
           </button>
         </div>
 
+        <div id="daily-tab-panel" class="tab-panel">
         <p id="plan-error" class="error" role="alert"></p>
 
         <div class="columns">
@@ -149,7 +149,7 @@
           <section class="card sleep-hero">
             <div>
               <p class="person-label">SLEEP TOGETHER · 共享作息</p>
-              <h2>今天睡得怎么样？</h2>
+              <h2>这天睡得怎么样？</h2>
               <p id="sleep-date-label" class="hint"></p>
             </div>
             <div class="sleep-actions">
@@ -176,9 +176,9 @@
                 </div>
               </div>
               <dl class="sleep-stats">
-                <div><dt>今天起床</dt><dd id="my-wake-time">未记录</dd></div>
-                <div><dt>今天睡觉</dt><dd id="my-bedtime">未记录</dd></div>
-                <div class="sleep-duration"><dt>昨晚睡眠</dt><dd id="my-sleep-duration">暂无法计算</dd></div>
+                <div><dt>当天起床</dt><dd id="my-wake-time">未记录</dd></div>
+                <div><dt>当天睡觉</dt><dd id="my-bedtime">未记录</dd></div>
+                <div class="sleep-duration"><dt>前夜睡眠</dt><dd id="my-sleep-duration">暂无法计算</dd></div>
               </dl>
             </section>
 
@@ -191,19 +191,19 @@
                 </div>
               </div>
               <dl class="sleep-stats">
-                <div><dt>今天起床</dt><dd id="partner-wake-time">未记录</dd></div>
-                <div><dt>今天睡觉</dt><dd id="partner-bedtime">未记录</dd></div>
-                <div class="sleep-duration"><dt>昨晚睡眠</dt><dd id="partner-sleep-duration">暂无法计算</dd></div>
+                <div><dt>当天起床</dt><dd id="partner-wake-time">未记录</dd></div>
+                <div><dt>当天睡觉</dt><dd id="partner-bedtime">未记录</dd></div>
+                <div class="sleep-duration"><dt>前夜睡眠</dt><dd id="partner-sleep-duration">暂无法计算</dd></div>
               </dl>
             </section>
           </div>
 
-          <p class="sleep-note">睡眠时长按“昨天记录的睡觉时间”到“今天记录的起床时间”自动计算，双方记录默认共享。</p>
+          <p class="sleep-note">睡眠时长按“前一天记录的睡觉时间”到“当天记录的起床时间”自动计算，双方记录默认共享。切到不是今天时，只能查看，不能改写历史记录。</p>
         </div>
       </section>
     </main>
 
     <script src="config.js"></script>
-    <script type="module" src="app.js?v=7"></script>
+    <script type="module" src="app.js?v=9"></script>
   </body>
 </html>

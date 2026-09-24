@@ -52,6 +52,9 @@ let replyTarget = null;
 let quotedPlan = null;
 let sleepRows = [];
 let loadedMessages = [];
+let accountLastSeenAt = null;
+let messageBoardVisible = false;
+let markingMessagesSeen = false;
 
 function show(el, visible) {
   el.hidden = !visible;
@@ -115,18 +118,8 @@ function setMessageContext({ reply = null, plan = null } = {}) {
   messageBody.focus();
 }
 
-function lastSeenStorageKey() {
-  return currentUser ? `dailyplan:msg-seen:${currentUser.id}` : "";
-}
-
-function getMessagesLastSeen() {
-  const key = lastSeenStorageKey();
-  return key ? localStorage.getItem(key) || "" : "";
-}
-
-function setMessagesLastSeen(iso) {
-  const key = lastSeenStorageKey();
-  if (key && iso) localStorage.setItem(key, iso);
+function lastSeenCutoff() {
+  return accountLastSeenAt || "";
 }
 
 function partnerMessages(items = loadedMessages) {
@@ -134,15 +127,24 @@ function partnerMessages(items = loadedMessages) {
   return items.filter((item) => item.user_id !== currentUser.id);
 }
 
-function updateMessageNotice(items = loadedMessages) {
-  if (!currentUser || !messageNotice) return;
-  const lastSeen = getMessagesLastSeen();
-  const unread = partnerMessages(items).filter(
+function unreadPartnerMessages(items = loadedMessages) {
+  const lastSeen = lastSeenCutoff();
+  return partnerMessages(items).filter(
     (item) => !lastSeen || item.created_at > lastSeen
   );
+}
+
+function updateMessageNotice(items = loadedMessages) {
+  if (!currentUser || !messageNotice) return;
+  const unread = unreadPartnerMessages(items);
   if (unread.length === 0) {
     show(messageNotice, false);
     messageNotice.textContent = "对方有新留言";
+    return;
+  }
+  // 留言板已经在眼前时，直接记已读，不再弹提醒。
+  if (messageBoardVisible) {
+    markMessagesSeen();
     return;
   }
   messageNotice.textContent =
@@ -150,18 +152,42 @@ function updateMessageNotice(items = loadedMessages) {
   show(messageNotice, true);
 }
 
-function markMessagesSeen(items = loadedMessages) {
-  if (!currentUser) return;
-  const partner = partnerMessages(items);
-  if (partner.length > 0) {
-    const newest = partner.reduce((latest, item) =>
-      item.created_at > latest ? item.created_at : latest
-    , partner[0].created_at);
-    setMessagesLastSeen(newest);
-  } else {
-    setMessagesLastSeen(new Date().toISOString());
+async function loadMessageReadState() {
+  if (!supabase || !currentUser) return;
+  const { data, error } = await supabase
+    .from("message_read_state")
+    .select("last_seen_at")
+    .eq("user_id", currentUser.id)
+    .maybeSingle();
+  if (error) {
+    console.warn("loadMessageReadState", error);
+    accountLastSeenAt = null;
+    return;
   }
+  accountLastSeenAt = data?.last_seen_at || null;
+}
+
+async function markMessagesSeen() {
+  if (!supabase || !currentUser || markingMessagesSeen) return;
+  const unread = unreadPartnerMessages();
   show(messageNotice, false);
+  if (unread.length === 0 && accountLastSeenAt) return;
+
+  const nextSeen = new Date().toISOString();
+  markingMessagesSeen = true;
+  accountLastSeenAt = nextSeen;
+  const { error } = await supabase.from("message_read_state").upsert(
+    {
+      user_id: currentUser.id,
+      last_seen_at: nextSeen,
+    },
+    { onConflict: "user_id" }
+  );
+  markingMessagesSeen = false;
+  if (error) {
+    console.warn("markMessagesSeen", error);
+    setError(planError, friendlyError(error));
+  }
 }
 
 function jumpToMessageBoard() {
@@ -177,7 +203,8 @@ function watchMessageBoardVisibility() {
   const observer = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
-        if (!entry.isIntersecting || !currentUser) continue;
+        messageBoardVisible = entry.isIntersecting;
+        if (!messageBoardVisible || !currentUser) continue;
         // 留言板进入可视区域后才记为已读，避免 Tab/误触输入框清掉提醒。
         markMessagesSeen();
       }
@@ -351,6 +378,7 @@ function renderMessages(items) {
 
 function showPlanner(user) {
   currentUser = user;
+  accountLastSeenAt = null;
   show(configWarning, false);
   show(loginView, false);
   show(planView, true);
@@ -360,13 +388,16 @@ function showPlanner(user) {
   dateLabel.textContent = formatDate(dateInput.value);
   subscribe();
   loadPlans();
-  loadMessages();
   loadSleepRecords();
+  // 先拉账号已读时间，再算留言提醒，换设备才能同步。
+  loadMessageReadState().then(() => loadMessages());
 }
 
 function showLogin() {
   currentUser = null;
   loadedMessages = [];
+  accountLastSeenAt = null;
+  messageBoardVisible = false;
   show(planView, false);
   show(userBar, false);
   show(loginView, true);
@@ -430,16 +461,21 @@ function renderSleepPerson({ todayRow, previousRow, wakeEl, bedtimeEl, durationE
 
 async function loadSleepRecords() {
   if (!supabase || !currentUser) return;
-  const today = todayISO();
-  const previousDate = shiftISO(today, -1);
-  sleepDateLabel.textContent = formatDate(today);
+  const selectedDate = dateInput.value || todayISO();
+  const previousDate = shiftISO(selectedDate, -1);
+  sleepDateLabel.textContent = formatDate(selectedDate);
   setError(sleepError, "");
+  const canRecord = selectedDate === todayISO();
+  recordWakeButton.disabled = !canRecord;
+  recordBedtimeButton.disabled = !canRecord;
+  recordWakeButton.title = canRecord ? "" : "只能为今天记录起床时间";
+  recordBedtimeButton.title = canRecord ? "" : "只能为今天记录睡觉时间";
 
   const { data, error } = await supabase
     .from("sleep_records")
     .select("id, user_id, record_date, wake_at, bedtime_at, updated_at")
     .gte("record_date", previousDate)
-    .lte("record_date", today);
+    .lte("record_date", selectedDate);
 
   if (error) {
     setError(sleepError, friendlyError(error));
@@ -452,14 +488,14 @@ async function loadSleepRecords() {
     sleepRows.find((row) => row.user_id === userId && row.record_date === date);
 
   renderSleepPerson({
-    todayRow: rowFor(currentUser.id, today),
+    todayRow: rowFor(currentUser.id, selectedDate),
     previousRow: rowFor(currentUser.id, previousDate),
     wakeEl: myWakeTime,
     bedtimeEl: myBedtime,
     durationEl: mySleepDuration,
   });
   renderSleepPerson({
-    todayRow: partnerId ? rowFor(partnerId, today) : null,
+    todayRow: partnerId ? rowFor(partnerId, selectedDate) : null,
     previousRow: partnerId ? rowFor(partnerId, previousDate) : null,
     wakeEl: partnerWakeTime,
     bedtimeEl: partnerBedtime,
@@ -469,9 +505,13 @@ async function loadSleepRecords() {
 
 async function recordSleepTime(field) {
   if (!supabase || !currentUser) return;
-  const today = todayISO();
+  const selectedDate = dateInput.value || todayISO();
+  if (selectedDate !== todayISO()) {
+    setError(sleepError, "只能为今天记录睡眠时间，请先点“今天”再记录");
+    return;
+  }
   const existing = sleepRows.find(
-    (row) => row.user_id === currentUser.id && row.record_date === today
+    (row) => row.user_id === currentUser.id && row.record_date === selectedDate
   );
   const label = field === "wake_at" ? "起床" : "睡觉";
   if (existing?.[field] && !window.confirm(`今天已经记录过${label}时间，要更新为现在吗？`)) {
@@ -480,7 +520,7 @@ async function recordSleepTime(field) {
 
   const payload = {
     user_id: currentUser.id,
-    record_date: today,
+    record_date: selectedDate,
     wake_at: existing?.wake_at || null,
     bedtime_at: existing?.bedtime_at || null,
     [field]: new Date().toISOString(),
@@ -581,6 +621,14 @@ async function submitMessage(event) {
   loadMessages();
 }
 
+function changeSelectedDate(nextIso) {
+  dateInput.value = nextIso;
+  setMessageContext();
+  loadPlans();
+  loadMessages();
+  loadSleepRecords();
+}
+
 function boot() {
   if (!supabaseUrl || !supabaseKey) {
     show(configWarning, true);
@@ -635,24 +683,16 @@ function boot() {
   }
 
   dateInput.addEventListener("change", () => {
-    setMessageContext();
-    loadPlans();
-    loadMessages();
+    changeSelectedDate(dateInput.value || todayISO());
   });
   document.querySelector("#prev-day").addEventListener("click", () => {
-    dateInput.value = shiftISO(dateInput.value || todayISO(), -1);
-    loadPlans();
-    loadMessages();
+    changeSelectedDate(shiftISO(dateInput.value || todayISO(), -1));
   });
   document.querySelector("#next-day").addEventListener("click", () => {
-    dateInput.value = shiftISO(dateInput.value || todayISO(), 1);
-    loadPlans();
-    loadMessages();
+    changeSelectedDate(shiftISO(dateInput.value || todayISO(), 1));
   });
   document.querySelector("#today").addEventListener("click", () => {
-    dateInput.value = todayISO();
-    loadPlans();
-    loadMessages();
+    changeSelectedDate(todayISO());
   });
 
   supabase.auth.onAuthStateChange((_event, session) => {

@@ -206,6 +206,47 @@ using (user_id = auth.uid());
 
 alter table public.messages replica identity full;
 
+-- 留言已读进度（按账号同步，换设备共用）
+create table if not exists public.message_read_state (
+  user_id uuid primary key references auth.users (id) on delete cascade,
+  last_seen_at timestamptz not null default 'epoch'::timestamptz,
+  updated_at timestamptz not null default now()
+);
+
+drop trigger if exists message_read_state_set_updated_at on public.message_read_state;
+create trigger message_read_state_set_updated_at
+before update on public.message_read_state
+for each row
+execute function public.set_plans_updated_at();
+
+alter table public.message_read_state enable row level security;
+
+revoke all on table public.message_read_state from public;
+revoke all on table public.message_read_state from anon;
+grant select, insert, update on table public.message_read_state to authenticated;
+
+drop policy if exists "message_read_state_select_own" on public.message_read_state;
+create policy "message_read_state_select_own"
+on public.message_read_state
+for select
+to authenticated
+using (user_id = auth.uid());
+
+drop policy if exists "message_read_state_insert_own" on public.message_read_state;
+create policy "message_read_state_insert_own"
+on public.message_read_state
+for insert
+to authenticated
+with check (user_id = auth.uid());
+
+drop policy if exists "message_read_state_update_own" on public.message_read_state;
+create policy "message_read_state_update_own"
+on public.message_read_state
+for update
+to authenticated
+using (user_id = auth.uid())
+with check (user_id = auth.uid());
+
 -- Realtime 需要完整旧行，删除或更新日期时客户端才能按 plan_date 过滤。
 alter table public.plans replica identity full;
 
